@@ -7,8 +7,13 @@ namespace LibraryTerminal
     {
         static void Main(string[] args)
         {
-        }
 
+        }
+            Library lib = new Library();
+            lib.DisplayMenu();
+
+            lib.UploadStockInformation();
+      
         public void PrintBookList()
         {
             for (int i = 0; i < Books.Count; i++)
@@ -39,6 +44,11 @@ namespace LibraryTerminal
         //            break;
         //    }
         //}
+
+
+
+        }
+
 
     }
 }
