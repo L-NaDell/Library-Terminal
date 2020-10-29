@@ -7,6 +7,7 @@ namespace LibraryTerminal
 {
     class Library
     {
+        const int offset = 1;
         public List<Media> BookStock { get; set; }
 
         public Library() {
@@ -32,7 +33,7 @@ namespace LibraryTerminal
 
         public void UploadStockInformation()
         {
-            List<Media> bookStock = new List<Media>();
+            List<Media> bookStock;
             StreamWriter streamWriter = new StreamWriter("../../../Data/BookStock.txt");
             bookStock = BookStock;
 
@@ -51,6 +52,32 @@ namespace LibraryTerminal
             Console.WriteLine("2) Search for a book by Author");
             Console.WriteLine("3) Search for a book by Title");
             Console.WriteLine("4) Checkout a book");
+            Console.WriteLine("5) Return a book");
+        }
+
+        public void PrintBookList()
+        {
+            for (int i = 0; i < BookStock.Count; i++)
+            {
+                Book bookList = (Book) BookStock[i];
+                Console.WriteLine($"{i + 1} : {bookList.Title}");
+            }
+        }
+
+        public void ReturnBook()
+        {
+            Console.Clear();
+            int bookChoice;
+
+            Console.WriteLine($"Book Return{Environment.NewLine}");
+            PrintBookList();
+            Console.Write($"Please select a book to return: ");
+            while(int.TryParse(Console.ReadLine(), out bookChoice) == false || bookChoice < 1 || bookChoice > BookStock.Count)
+            {
+                Console.Write($"You must enter 1 - {BookStock.Count}: ");
+            }
+            Console.WriteLine();
+            BookStock[bookChoice - offset].Status = Status.OnShelf;
         }
     }
 }
