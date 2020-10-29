@@ -6,16 +6,11 @@ namespace LibraryTerminal
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Library lib = new Library();
+            lib.DisplayMenu();
+
+            lib.UploadStockInformation();
         }
 
-        //creating
-        public void BookList()
-        {
-            for (int i = 0; i < length; i++)
-            {
-
-            }
-        }
     }
 }

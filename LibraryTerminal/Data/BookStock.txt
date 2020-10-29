@@ -1,0 +1,3 @@
+Fight Club|OnShelf|12/12/2999 12:00:00 AM|Chuck Palahniuk
+To Kill a Mockingbird|OnShelf|12/12/2999 12:00:00 AM|Harper Lee
+Of Mice and Men|OnShelf|12/12/2999 12:00:00 AM|John Steinbeck
