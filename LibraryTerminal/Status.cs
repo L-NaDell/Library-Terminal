@@ -4,7 +4,9 @@ using System.Text;
 
 namespace LibraryTerminal
 {
-    class Status
+    public enum Status
     {
+        OnShelf,
+        CheckedOut
     }
 }

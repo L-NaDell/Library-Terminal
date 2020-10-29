@@ -4,7 +4,11 @@ using System.Text;
 
 namespace LibraryTerminal
 {
-    class Movie
+    class Movie : Media
     {
+        public Movie(string Title, Status Status, DateTime DueDate)
+            : base(Title, Status, DueDate)
+        {
+        }
     }
 }

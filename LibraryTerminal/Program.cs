@@ -8,5 +8,14 @@ namespace LibraryTerminal
         {
             Console.WriteLine("Hello World!");
         }
+
+        //creating
+        public void BookList()
+        {
+            for (int i = 0; i < length; i++)
+            {
+
+            }
+        }
     }
 }
