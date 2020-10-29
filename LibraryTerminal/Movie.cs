@@ -6,9 +6,12 @@ namespace LibraryTerminal
 {
     class Movie : Media
     {
-        public Movie(string Title, Status Status, DateTime DueDate)
+        public string Genre { get; set; }
+
+        public Movie(string Title, Status Status, DateTime DueDate, string Genre)
             : base(Title, Status, DueDate)
         {
+            this.Genre = Genre;
         }
     }
 }
