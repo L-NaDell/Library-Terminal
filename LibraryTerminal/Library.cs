@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace LibraryTerminal
@@ -8,6 +9,8 @@ namespace LibraryTerminal
     class Library
     {
         public List<Media> BookStock { get; set; }
+
+        public List<Book> Books { get; set; } = new List<Book>();
 
         public Library() {
             List<Media> booksFromFile = new List<Media>();
@@ -51,6 +54,36 @@ namespace LibraryTerminal
             Console.WriteLine("2) Search for a book by Author");
             Console.WriteLine("3) Search for a book by Title");
             Console.WriteLine("4) Checkout a book");
+        }
+
+        public void PrintBookList()
+        {
+            for (int i = 0; i < Books.Count; i++)
+            {
+                Book bookList = Books[i];
+                Console.WriteLine($"{i + 1} : {bookList.Title}");
+            }
+        }
+
+        public void CheckOut()
+        {
+            PrintBookList();
+            Console.Write("What book would you like to check out?  ");
+            int bookIndex = int.Parse(Console.ReadLine());
+
+            Book book = Books[bookIndex -1];
+
+            switch (book.Status)
+            {
+                case Status.CheckedOut:
+                    Console.WriteLine($"I'm sorry, that book is already checked out. It is due back on {book.DueDate}.");
+                    break;
+                case Status.OnShelf:
+                    book.Status = Status.CheckedOut;
+                    book.DueDate = DateTime.Now.AddDays(14);
+                    Console.WriteLine($"Thank you for checking out {book.Title}, please return it by {book.DueDate}.");
+                    break;
+            }
         }
     }
 }
