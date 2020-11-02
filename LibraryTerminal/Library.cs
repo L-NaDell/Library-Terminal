@@ -52,5 +52,269 @@ namespace LibraryTerminal
             Console.WriteLine("3) Search for a book by Title");
             Console.WriteLine("4) Checkout a book");
         }
+
+        public void PrintBookList()
+        {
+            for (int i = 0; i < BookStock.Count; i++)
+            {
+                Book bookList = BookStock[i];
+                Console.WriteLine($"{i + offset} : {bookList.Author}");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public void SearchByAuthor(Status status)
+        {
+            int counter = 0;
+            string userInput;
+            Console.WriteLine("Which Author would you like to search for?");
+            userInput = Console.ReadLine().Trim().ToLower();
+
+            while (userInput.Equals(""))
+            {
+                Console.WriteLine("You must enter a value.");
+                userInput = Console.ReadLine().Trim().ToLower();
+            }
+
+            for (int i = 0; i < BookStock.Count; i++)
+            {
+                Book bookList = BookStock[i];
+                if (bookList.Author.ToLower() == userInput)
+                {
+                    Console.WriteLine($"{i + offset} : {bookList.Author}");
+                    counter++;
+                }
+            }
+            if (counter == 0)
+            {
+                Console.WriteLine("There are no books to list by this Author.");
+            }
+        }
+
+
+        public void SearchByTitle(Status status)
+        {
+            int counter = 0;
+            string userInput;
+            Console.WriteLine("Which Author would you like to search for?");
+            userInput = Console.ReadLine().Trim().ToLower();
+
+            while (userInput.Equals(""))
+            {
+                Console.WriteLine("You must enter a value.");
+                userInput = Console.ReadLine().Trim().ToLower();
+            }
+
+            for (int i = 0; i < BookStock.Count; i++)
+            {
+                Book bookList = BookStock[i];
+                if (bookList.Title.ToLower().Contains(userInput))
+                {
+                    Console.WriteLine($"{i + offset} : {bookList.Title}");
+                    counter++;
+                }
+            }
+            if (counter == 0)
+            {
+                Console.WriteLine("There are no books to list.");
+            }
+        }
     }
 }
