@@ -87,7 +87,19 @@ namespace LibraryTerminal
                     SearchByTitle();
                     break;
                 case 4:
-                    CheckOut();
+                    int bookIndex;
+                    Console.Clear();
+                    Console.WriteLine($"Book Checkout{Environment.NewLine}");
+                    PrintBookList();
+                    Console.Write($"{Environment.NewLine}What book would you like to check out? : ");
+                    while (int.TryParse(Console.ReadLine(), out bookIndex) == false || bookIndex < 1 || bookIndex > BookStock.Count)
+                    {
+                        Console.Write($"You must enter 1 - {BookStock.Count}: ");
+                    }
+                    Console.WriteLine();
+
+                    Book book = BookStock[bookIndex - offset];
+                    CheckOut(book);
                     break;
                 case 5:
                     ReturnBook();
@@ -173,47 +185,28 @@ namespace LibraryTerminal
             for (int i = 0; i < BookStock.Count; i++)
             {
                 Book bookList = BookStock[i];
-                Console.WriteLine($"{i + offset} : {bookList.Title}");
+                Console.WriteLine($"{i + offset} : {bookList.Title} by {bookList.Author}");
             }
         }
-        public bool PrintBookList(Status status)
+        public List<int> PrintBookList(Status status)
         {
             int counter = 0;
+            List<int> bookIndexes = new List<int>();
             for (int i = 0; i < BookStock.Count; i++)
             {
                 Book bookList = BookStock[i];
                 if(bookList.Status == status)
                 {
-                    Console.WriteLine($"{i + offset} : {bookList.Title}");
+                    Console.WriteLine($"{i + offset} : {bookList.Title} by {bookList.Author}");
+                    bookIndexes.Add(i + offset);
                     counter++;
                 }
             }
 
-            if(counter != 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return bookIndexes;
         }
-        public void CheckOut()
-        {
-            int bookIndex;
-
-            Console.Clear();
-            Console.WriteLine($"Book Checkout{Environment.NewLine}");
-            PrintBookList();
-            Console.Write($"{Environment.NewLine}What book would you like to check out? : ");
-            while (int.TryParse(Console.ReadLine(), out bookIndex) == false || bookIndex < 1 || bookIndex > BookStock.Count)
-            {
-                Console.Write($"You must enter 1 - {BookStock.Count}: ");
-            }
-            Console.WriteLine();
-
-            Book book = BookStock[bookIndex - offset];
-
+        public void CheckOut(Book book)
+        {   
             switch (book.Status)
             {
                 case Status.CheckedOut:
@@ -232,16 +225,30 @@ namespace LibraryTerminal
         {
             Console.Clear();
             int bookChoice;
+            List<int> bookIndexes = new List<int>();
             Status status = Status.CheckedOut;
 
             Console.WriteLine($"Book Return{Environment.NewLine}");
-            if (PrintBookList(status))
+            bookIndexes = PrintBookList(status);
+            if (bookIndexes.Count > 0)
             {
                 Console.Write($"{Environment.NewLine}Please select a book to return: ");
                 // if the user enters something other than a number or if the choice is out of range, it will continue to prompt the user to choose
                 while (int.TryParse(Console.ReadLine(), out bookChoice) == false || bookChoice < 1 || bookChoice > BookStock.Count)
                 {
-                    Console.Write($"You must enter 1 - {BookStock.Count}: ");
+                    Console.Write($"You must enter ");
+                    for (int i = 0; i < bookIndexes.Count; i++)
+                    {
+                        if(i < bookIndexes.Count - 1)
+                        {
+                            Console.Write($"{bookIndexes[i]}, ");
+                        }
+                        else
+                        {
+                            Console.Write($"or {bookIndexes[i]}: ");
+                        }
+                        
+                    }
                 }
                 Console.WriteLine();
                 // changes the Status of the book chosen by the user. offset is used to subtract 1 from the users choice to call the correct index
@@ -340,6 +347,7 @@ namespace LibraryTerminal
         public void SearchByAuthor()
         {
             int counter = 0;
+
             string userInput;
             Console.Write("Which Author would you like to search for?: ");
             userInput = Console.ReadLine().Trim().ToLower();
@@ -355,7 +363,7 @@ namespace LibraryTerminal
                 Book bookList = BookStock[i];
                 if (bookList.Author.ToLower().Contains(userInput))
                 {
-                    Console.WriteLine($"{i + offset} : {bookList.Title}");
+                    Console.WriteLine($"{i + offset} : {bookList.Title} by {bookList.Author}");
                     counter++;
                 }
             }
