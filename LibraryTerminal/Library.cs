@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,8 +57,7 @@ namespace LibraryTerminal
             Console.WriteLine("3) Search for a book by Title");
             Console.WriteLine("4) Checkout a book");
             Console.WriteLine("5) Return a book");
-            Console.WriteLine("6) Enter a book into inventory");
-            Console.WriteLine("7) Remove a book from inventory");
+            Console.WriteLine("6) Edit inventory");
         }
         public int GetMenuChoice()
         {
@@ -81,10 +81,10 @@ namespace LibraryTerminal
                     PrintBookList();
                     break;
                 case 2:
-                    ReturnBook();
+                    SearchByAuthor();
                     break;
                 case 3:
-                    ReturnBook();
+                    SearchByTitle();
                     break;
                 case 4:
                     CheckOut();
@@ -93,13 +93,78 @@ namespace LibraryTerminal
                     ReturnBook();
                     break;
                 case 6:
-                    EnterBook();
-                    break;
-                case 7:
-                    RemoveBook();
+                    DisplayEditMenu();
                     break;
                 default:
                     break;
+            }
+        }
+        public void DisplayEditMenu()
+        {
+            Console.Clear();
+            Console.WriteLine($"Inventory Edit Menu");
+            Console.WriteLine();
+            Console.WriteLine("Please select an option: ");
+            Console.WriteLine("1) Add book to inventory");
+            Console.WriteLine("2) Remove book from inventory");
+            Console.WriteLine();
+            Console.WriteLine("0) Exit Edit Menu");
+
+            ExecuteEditMenuChoice(GetEditMenuChoice());
+        }
+        public int GetEditMenuChoice()
+        {
+            int userChoice;
+            const int lowestChoice = 0;
+            const int highestChoice = 3;
+
+            Console.Write($"{Environment.NewLine}Enter your choice: ");
+
+            while (int.TryParse(Console.ReadLine(), out userChoice) == false || userChoice < lowestChoice || userChoice > highestChoice)
+            {
+                Console.Write($"You must enter {lowestChoice} - {highestChoice}: ");
+            }
+            return userChoice;
+        }
+        public void ExecuteEditMenuChoice(int choice)
+        {
+            switch (choice)
+            {
+                case 1:
+                    if(ValidateUser())
+                    {
+                        EnterBook();
+                    }                    
+                    break;
+                case 2:
+                    if (ValidateUser())
+                    {
+                        RemoveBook();
+                    }
+                    break;
+                case 0:
+                    break;
+                default:
+                    break;
+            }
+        }
+        public bool ValidateUser()
+        {
+            int userInput;
+            int PIN = 1337;
+            Console.Write("Please enter the PIN to change the inventory: ");
+            while(int.TryParse(Console.ReadLine(), out userInput) == false)
+            {
+                Console.Write("You must enter a number: ");
+            }
+            if (userInput == PIN)
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("That is not the correct PIN!!");
+                return false;
             }
         }
         public void PrintBookList()
@@ -111,7 +176,7 @@ namespace LibraryTerminal
                 Console.WriteLine($"{i + offset} : {bookList.Title}");
             }
         }
-        public void PrintBookList(Status status)
+        public bool PrintBookList(Status status)
         {
             int counter = 0;
             for (int i = 0; i < BookStock.Count; i++)
@@ -123,9 +188,14 @@ namespace LibraryTerminal
                     counter++;
                 }
             }
-            if (counter == 0)
+
+            if(counter != 0)
             {
-                Console.WriteLine("There are no books to list here.");
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
         public void CheckOut()
@@ -151,7 +221,9 @@ namespace LibraryTerminal
                     break;
                 case Status.OnShelf:
                     book.Status = Status.CheckedOut;
-                    book.DueDate = DateTime.Now.AddDays(14);
+                    book.DueDate = DateTime.Parse(DateTime.Now.ToShortDateString()).AddDays(14);
+                    book.DueDate = book.DueDate.AddHours(23);
+                    book.DueDate = book.DueDate.AddMinutes(59);
                     Console.WriteLine($"Thank you for checking out {book.Title}, please return it by {book.DueDate}.");
                     break;
             }
@@ -163,19 +235,26 @@ namespace LibraryTerminal
             Status status = Status.CheckedOut;
 
             Console.WriteLine($"Book Return{Environment.NewLine}");
-            PrintBookList(status);
-            Console.Write($"{Environment.NewLine}Please select a book to return: ");
-            // if the user enters something other than a number or if the choice is out of range, it will continue to prompt the user to choose
-            while(int.TryParse(Console.ReadLine(), out bookChoice) == false || bookChoice < 1 || bookChoice > BookStock.Count)
+            if (PrintBookList(status))
             {
-                Console.Write($"You must enter 1 - {BookStock.Count}: ");
+                Console.Write($"{Environment.NewLine}Please select a book to return: ");
+                // if the user enters something other than a number or if the choice is out of range, it will continue to prompt the user to choose
+                while (int.TryParse(Console.ReadLine(), out bookChoice) == false || bookChoice < 1 || bookChoice > BookStock.Count)
+                {
+                    Console.Write($"You must enter 1 - {BookStock.Count}: ");
+                }
+                Console.WriteLine();
+                // changes the Status of the book chosen by the user. offset is used to subtract 1 from the users choice to call the correct index
+                Book usersBook = BookStock[bookChoice - offset];
+                usersBook.Status = Status.OnShelf;
+                if (usersBook.DueDate > DateTime.Today)
+                    Console.WriteLine($"Thank you for returning {usersBook.Title} on time!");
             }
-            Console.WriteLine();
-            // changes the Status of the book chosen by the user. offset is used to subtract 1 from the users choice to call the correct index
-            Book usersBook = BookStock[bookChoice - offset];
-            usersBook.Status = Status.OnShelf;
-            if(usersBook.DueDate > DateTime.Today)
-            Console.WriteLine($"Thank you for returning {usersBook.Title} on time!");
+            else
+            {
+                Console.WriteLine("There are no books to return");
+            }
+            
         }
         public bool ReturnContinueChoice()
         {
@@ -258,16 +337,16 @@ namespace LibraryTerminal
                 Console.WriteLine($"{bookTitle} has NOT been removed from the inventory.");
             }            
         }
-        public void SearchByAuthor(Status status)
+        public void SearchByAuthor()
         {
             int counter = 0;
             string userInput;
-            Console.WriteLine("Which Author would you like to search for?");
+            Console.Write("Which Author would you like to search for?: ");
             userInput = Console.ReadLine().Trim().ToLower();
 
             while (userInput.Equals(""))
             {
-                Console.WriteLine("You must enter a value.");
+                Console.Write("You must enter a value: ");
                 userInput = Console.ReadLine().Trim().ToLower();
             }
 
@@ -276,7 +355,7 @@ namespace LibraryTerminal
                 Book bookList = BookStock[i];
                 if (bookList.Author.ToLower() == userInput)
                 {
-                    Console.WriteLine($"{i + offset} : {bookList.Author}");
+                    Console.WriteLine($"{i + offset} : {bookList.Title}");
                     counter++;
                 }
             }
@@ -285,16 +364,16 @@ namespace LibraryTerminal
                 Console.WriteLine("There are no books to list by this Author.");
             }
         }
-        public void SearchByTitle(Status status)
+        public void SearchByTitle()
         {
             int counter = 0;
             string userInput;
-            Console.WriteLine("Which Author would you like to search for?");
+            Console.Write("Which Author would you like to search for?: ");
             userInput = Console.ReadLine().Trim().ToLower();
 
             while (userInput.Equals(""))
             {
-                Console.WriteLine("You must enter a value.");
+                Console.Write("You must enter a value: ");
                 userInput = Console.ReadLine().Trim().ToLower();
             }
 
