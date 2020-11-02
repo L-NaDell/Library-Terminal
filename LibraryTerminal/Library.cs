@@ -56,12 +56,14 @@ namespace LibraryTerminal
             Console.WriteLine("3) Search for a book by Title");
             Console.WriteLine("4) Checkout a book");
             Console.WriteLine("5) Return a book");
+            Console.WriteLine("6) Enter a book into inventory");
+            Console.WriteLine("7) Remove a book from inventory");
         }
         public int GetMenuChoice()
         {
             int userChoice;
-            const int lowestChoice = 1;
-            const int highestChoice = 5;
+            const int lowestChoice = 0;
+            const int highestChoice = 7;
 
             Console.Write($"{Environment.NewLine}Enter your choice: ");
 
@@ -90,12 +92,19 @@ namespace LibraryTerminal
                 case 5:
                     ReturnBook();
                     break;
+                case 6:
+                    EnterBook();
+                    break;
+                case 7:
+                    RemoveBook();
+                    break;
                 default:
                     break;
             }
         }
         public void PrintBookList()
         {
+            Console.Clear();
             for (int i = 0; i < BookStock.Count; i++)
             {
                 Book bookList = BookStock[i];
@@ -121,8 +130,9 @@ namespace LibraryTerminal
         }
         public void CheckOut()
         {
-            Console.Clear();
             int bookIndex;
+
+            Console.Clear();
             Console.WriteLine($"Book Checkout{Environment.NewLine}");
             PrintBookList();
             Console.Write($"{Environment.NewLine}What book would you like to check out? : ");
@@ -132,7 +142,7 @@ namespace LibraryTerminal
             }
             Console.WriteLine();
 
-            Book book = BookStock[bookIndex - 1];
+            Book book = BookStock[bookIndex - offset];
 
             switch (book.Status)
             {
@@ -188,35 +198,65 @@ namespace LibraryTerminal
                 return false;
             }
         }
-
-        public void PrintBookList()
+        public void EnterBook()
         {
-            for (int i = 0; i < Books.Count; i++)
+            string title, author;
+            Status status = Status.OnShelf;
+            DateTime dueDate = DateTime.Parse("12/12/2999 12:00:00 AM");
+            Console.Write("First, we need the title of the book being added to the inventory: ");
+            title = Console.ReadLine();
+            while (title.Equals(null))
             {
-                Book bookList = Books[i];
-                Console.WriteLine($"{i + 1} : {bookList.Title}");
+                Console.WriteLine("You must provide a title: ");
+                title = Console.ReadLine();
             }
+
+            Console.Write("Next, we need the author of the book being added to the inventory: ");
+            author = Console.ReadLine();
+            while (author.Equals(null))
+            {
+                Console.WriteLine("You must provide an author: ");
+                author = Console.ReadLine();
+            }
+            BookStock.Add(new Book(
+                    title, status, dueDate, author
+                ));
+            Console.WriteLine($"The book, {title} by {author} has been added to the inventory.");
         }
-
-        public void CheckOut()
+        public void RemoveBook()
         {
+            int bookIndex;
+            string userInput;
+
+            Console.Clear();
+            Console.WriteLine($"Remove Book From Inventory{Environment.NewLine}");
             PrintBookList();
-            Console.Write("What book would you like to check out?  ");
-            int bookIndex = int.Parse(Console.ReadLine());
-
-            Book book = Books[bookIndex -1];
-
-            switch (book.Status)
+            Console.Write($"{Environment.NewLine}What book would you like to remove? : ");
+            while (int.TryParse(Console.ReadLine(), out bookIndex) == false || bookIndex < 1 || bookIndex > BookStock.Count)
             {
-                case Status.CheckedOut:
-                    Console.WriteLine($"I'm sorry, that book is already checked out. It is due back on {book.DueDate}.");
-                    break;
-                case Status.OnShelf:
-                    book.Status = Status.CheckedOut;
-                    book.DueDate = DateTime.Now.AddDays(14);
-                    Console.WriteLine($"Thank you for checking out {book.Title}, please return it by {book.DueDate}.");
-                    break;
+                Console.Write($"You must enter 1 - {BookStock.Count}: ");
             }
+            Console.WriteLine();
+            string bookTitle = BookStock[bookIndex - offset].Title;
+
+            Console.Write($"Are you sure you want to remove {bookTitle} from the inventory? (y or n): ");
+            userInput = Console.ReadLine().Trim().ToLower();
+
+            while (userInput != "y" && userInput != "n")
+            {
+                Console.Write("You must enter y or n: ");
+                userInput = Console.ReadLine().Trim().ToLower();
+            }
+
+            if (userInput == "y")
+            {
+                BookStock.RemoveAt(bookIndex - offset);
+                Console.WriteLine($"{bookTitle} has been removed from the inventory.");
+            }
+            else
+            {
+                Console.WriteLine($"{bookTitle} has NOT been removed from the inventory.");
+            }            
         }
     }
 }

@@ -22,7 +22,6 @@ namespace LibraryTerminal
                 notFinished = lib.ReturnContinueChoice();
             }
         }
-
         public List<Book> Books { get; set; } = new List<Book>();
 
         //public Book CheckOut()
