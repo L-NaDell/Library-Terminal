@@ -353,7 +353,7 @@ namespace LibraryTerminal
             for (int i = 0; i < BookStock.Count; i++)
             {
                 Book bookList = BookStock[i];
-                if (bookList.Author.ToLower() == userInput)
+                if (bookList.Author.ToLower().Contains(userInput))
                 {
                     Console.WriteLine($"{i + offset} : {bookList.Title}");
                     counter++;
@@ -368,7 +368,7 @@ namespace LibraryTerminal
         {
             int counter = 0;
             string userInput;
-            Console.Write("Which Author would you like to search for?: ");
+            Console.Write("Which title would you like to search for?: ");
             userInput = Console.ReadLine().Trim().ToLower();
 
             while (userInput.Equals(""))
